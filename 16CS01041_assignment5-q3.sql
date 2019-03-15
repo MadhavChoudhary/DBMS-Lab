@@ -4,6 +4,9 @@ drop table doctor;
 drop table opd_schedule;
 drop table appointment;
 drop table opd_payments;
+drop view v4;
+drop view v5;
+drop view v6;
 
 -- Set environment
 set lines 256

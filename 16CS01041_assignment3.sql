@@ -1177,7 +1177,7 @@ create view test13 as
 	select right(hire_date,2) as year, count(employee_id) as cnt 
 	from employees 
 	group by right(hire_date,2);
-select year from test13 where cnt in (select max(cnt) from test13);
+select year from test13 where cnt = (select max(cnt) from test13);
 
 -- +------+
 -- | year |
@@ -1200,10 +1200,9 @@ where department_id=10 and salary>(select min(salary) from employees where depar
 
 -- Question 15
 select concat(e1.first_name,' ',e1.last_name) as name, e1.salary 
-from employees e1, employees e2 
-where e1.salary<e2.salary 
-group by e1.employee_id 
-having count(*)>(select count(*) from employees)/2;
+from employees e1
+where (select count(*) from employees e2 where e1.salary>e2.salary)
+		>(select count(*) from employees e2 where e1.salary<e2.salary);
 
 -- +------------------+--------+
 -- | name             | salary |

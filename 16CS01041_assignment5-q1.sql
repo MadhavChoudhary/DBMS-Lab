@@ -212,22 +212,39 @@ end;
 /
 
 --c)
-select avg(grades) as average_grade, name, semester_no from student, grades, course where student.roll=grades.roll and grades.courseno=course.courseno group by student.roll,semester_no, name; 
+select avg(grades) as average_grade, name, semester_no 
+from student, grades, course 
+where student.roll=grades.roll and grades.courseno=course.courseno 
+group by student.roll,semester_no, name; 
 
 --d)
-select max(average_grade), batch from (select avg(grades) as average_grade, name, batch, semester_no from student, grades, course where student.roll=grades.roll and grades.courseno=course.courseno group by student.roll,batch,semester_no, name) group by batch;
+select max(average_grade), batch 
+from (select avg(grades) as average_grade, name, batch, semester_no 
+	from student, grades, course 
+	where student.roll=grades.roll and grades.courseno=course.courseno 
+	group by student.roll,batch,semester_no, name) 
+group by batch;
 
 --e)
 create table t1 as select sum(grades*credit) as net_grade, roll from grades,course where grades.courseno=course.courseno group by roll;
 create table t2 as select sum(credit) as net_credit, roll from grades,course where grades.courseno=course.courseno group by roll;
-create table t3 as select  net_grade, net_credit, net_grade/net_credit as cgpa from t1,t2 where t1.roll=t2.roll;
+create table t3 as select net_grade, net_credit, net_grade/net_credit as cgpa from t1,t2 where t1.roll=t2.roll;
 select * from t3;
 drop table t1;
 drop table t2;
 drop table t3;
 
 --f)
-select roll, batch from student s where ((select avg(grades) as degreegrade from grades where roll=s.roll), batch) in (select max(degreegrade), batch from student, (select avg(grades) as degreegrade, roll from grades group by roll) temp where student.roll=temp.roll group by batch);
+select roll, batch 
+from student s 
+where ((select avg(grades) as degreegrade 
+	from grades 
+	where roll=s.roll), batch) 
+in (select max(degreegrade), batch 
+	from student, (select avg(grades) as degreegrade, roll 
+		from grades 
+		group by roll) temp 
+	where student.roll=temp.roll group by batch);
 
 --g)
 select count(roll), department from student where batch=&batch and roll in (select roll from (select avg(grades) as degreegrade, roll from grades group by roll) where degreegrade>9) group by department;

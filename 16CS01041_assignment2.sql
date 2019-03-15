@@ -187,8 +187,9 @@ order by e.dno,e.lname,e.fname;
 -- Question d
 select concat(e.fname,' ',e.lname) as employee_name,concat(m.fname,' ',m.lname) as manager_name 
 from project as p inner join works_on as w on w.pno=p.pnumber and w.hours>10 
+inner join department as d on d.dno = p.dnum
 inner join employee as e on e.ssn=w.essn 
-inner join employee as m on m.ssn=e.super_ssn 
+inner join employee as m on m.ssn=d.mgr_ssn
 where p.pname="productx";
 
 -- +---------------+---------------+
@@ -228,10 +229,13 @@ where d.dname="research";
 -- 1 row in set (0.00 sec)
 
 -- Question h
-select e.dno,count(e.dno) as no 
-from employee e 
-where e.salary>30000 
-group by e.dno;
+select dno,count(*) from employee where dno in 
+	(select e.dno
+	from employee e  
+	group by e.dno
+	having count(*)>=3)
+and salary>30000
+group by dno;
 
 -- +-----+----+
 -- | dno | no |

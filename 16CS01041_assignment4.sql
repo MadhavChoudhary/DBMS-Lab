@@ -402,16 +402,17 @@ begin
 end;
 /
 
--- Question 9
+-- Question 8
 select first_name||last_name as name, salary 
 from employees 
 where '31-12-1990' > hire_date and department_id=20;
 
+-- Question 9
 declare
 	cursor e is select * from employees;
 	user_date varchar(20);
 	user_dept int(10);
-	records e%rowtype;
+	records employees%rowtype;
 	n number := 0;
 begin
 	user_dept:=&dept;
@@ -471,7 +472,7 @@ declare
 begin
 	select to_char(sysdate,'yyyy-mm-dd') into s_date from dual;
 	v_username:='hr';
-	if (:new.job_id<>:old.job_id and :new.department_id<>:old.department_id) then
+	if (:new.job_id!=:old.job_id and :new.department_id!=:old.department_id) then
 		insert into employment_change values (:new.employee_id,:old.job_id,:new.job_id,:old.department_id,:new.department_id,v_username,sysdate,'both');
 	elsif :new.job_id!=:old.job_id then
 		insert into employment_change values (:new.employee_id,:old.job_id,:new.job_id,:old.department_id,:new.department_id,v_username,s_date,'job');
@@ -485,10 +486,12 @@ end;
 
 -- Question 12
 declare
-procedure updatesalary(val in number, dept in number) is
+
+create procedure updatesalary(val in number, dept in number) is
 	begin
 		update employees set salary=salary+val where department_id=dept;
 	end;
+
 begin
 	updatesalary(&sal,&x);
 exception
