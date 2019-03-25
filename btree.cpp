@@ -345,16 +345,25 @@ void BTreeNode::splitChild(int i, BTreeNode * y) {
 
 void BTreeNode::traverse() {
 
-  int i;
-  for (i = 0; i < n; i++) {
+	int i,j;
+  cout<<"(";
+  for(i=0; i<n; i++) 
+  	cout<<keys[i]<<" ";
+  cout<<") -> ";
 
-    if (leaf == false)
-      C[i] -> traverse();
-    cout << " " << keys[i];
-  }
+  cout<<"(";
+  for(i=0; i<=n; i++)
+  	for(j=0; j<n; j++)
+  		if(C[i]!=NULL)
+  			cout<<C[i]->keys[j]<<" ";
+  cout<<")\n";
 
-  if (leaf == false)
-    C[i] -> traverse();
+	for (i = 0; i < n; i++) 
+	  if (leaf == false) 
+	  	C[i] -> traverse();
+
+	if (leaf == false) 
+		C[i] -> traverse();
 }
 
 BTreeNode * BTreeNode::search(int k) {
@@ -403,13 +412,14 @@ int main() {
 
   while(1)
   {
-  	cin>>ch>>d;
+  	cin>>ch;
   	if(ch=="quit")
   		break;
+  	cin>>d;
   	else if(ch=="insert")
   		t.insert(d);
   	else if(ch=="remove")
-  		t.insert(d);
+  		t.remove(d);
 
   	t.traverse();
   	cout<<endl;
