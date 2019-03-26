@@ -1,5 +1,5 @@
 #include <iostream>
-#include <json/json.h>
+#include "json/json.h"
 #include <fstream>
 
 using namespace std;
@@ -18,7 +18,7 @@ public:
 
     void traverse();
 
-    Json::Value json_graph();
+    Value json_graph();
 
     void inordertraverse();
 
@@ -73,7 +73,7 @@ public:
         ofstream fd;
         fd.open("tree.json");
 
-        Json::StreamWriterBuilder builder;
+        StreamWriterBuilder builder;
 
         builder["commentStyle"] = "None";
         builder["indentation"] = "   "; 
@@ -83,6 +83,8 @@ public:
         writer->write(root->json_graph(),&fd);
 
         fd.close();
+
+        system("./printBTree.sh tree.json && convert tree.json.svg out.png && imgcat out.png");
     }
 
     BTreeNode * search(int k) {
@@ -388,15 +390,12 @@ void BTreeNode::traverse() {
     }
     cout<<")\n";
 
-    for (i = 0; i < n; i++)
-        if (leaf == false)
+    if(!leaf)
+        for (i = 0; i < n; i++)
             C[i] -> traverse();
-
-    if (leaf == false)
-        C[i] -> traverse();
 }
 
-Json::Value BTreeNode::json_graph() {
+Value BTreeNode::json_graph() {
 
     Value graph;
     Value children;
@@ -407,19 +406,14 @@ Json::Value BTreeNode::json_graph() {
     for(i=0; i<n; i++)
         key.append(Value(keys[i]));
 
-    // for(i=0; i<=n; i++) {
-    //     if(!leaf) {
-    //         for(j=0; j<C[i]->n; j++)
-    //             cout<<C[i]->keys[j]<<" ";
-    //     }
-    // }
-
-    // if(!leaf)
-    //     for (i = 0; i <= n; i++)
-    //         children.append(C[i] -> json_graph());
+    if(!leaf){
+        for (i = 0; i <= n; i++)
+            children.append(C[i] -> json_graph());
+        graph["children"] = children;
+    }
 
     graph["keys"] = key;
-    graph["children"] = children;
+    
 
     return graph;
 }
@@ -478,25 +472,40 @@ int main() {
     int d;
     string ch;
 
+    cout<<"Enter the max degree ";
     cin>>d;
 
     BTree t(d);
 
+    cout<<"Commands:\nsearch <value> to search\n";
+    cout<<"insert <value> to insert\n";
+    cout<<"delete <value> to delete\n";
+    cout<<"print to print the graph\n";
+    cout<<"exit to exit\n";
+
     while(1)
     {
+        cout<<"Enter Command: ";
         cin>>ch;
-        if(ch=="q")
+
+        if(ch=="exit")
             break;
-
-        cin>>d;
-
-        if(ch=="i") t.insert(d);
-        else if(ch=="r") t.remove(d);
-
-        t.traverse();
-
-        if(ch=="s")
-            cout<<"The address of the node is "<<t.search(d);
+        else if(ch=="print")
+            t.print_graph();
+        else{
+            cin>>d;
+            if(ch=="insert"){
+                t.insert(d);
+                t.traverse();
+            }
+            else if(ch=="remove"){
+                t.remove(d);
+                t.traverse();
+            }
+            else if(ch=="search"){
+                cout<<"The pointer for the node is "<<t.search(d);
+            }
+        }
 
         cout<<endl;
     }

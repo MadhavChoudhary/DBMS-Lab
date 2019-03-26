@@ -3,7 +3,11 @@
 #include<sstream>
 #include<fstream>
 #include<climits>
+#include"json/json.h"
+
 using namespace std;
+using namespace Json;
+
 int MAX;
 class BPTree; 
 class Node
@@ -27,6 +31,7 @@ public:
 	void insert(int);
 	void remove(int);
 	void display(Node*);
+    Value json_graph(Node*);
 	Node* getRoot();
 	void cleanUp(Node*);
 	~BPTree();
@@ -129,6 +134,27 @@ int main(int argc, char* argv[])
 		else if(!command.compare("display"))
 		{
 			bpt.display(bpt.getRoot());
+		}
+		else if(!command.compare("print"))
+		{
+	        if(bpt.getRoot()==NULL) 
+	            continue;
+
+	        ofstream fd;
+	        fd.open("tree.json");
+
+	        StreamWriterBuilder builder;
+
+	        builder["commentStyle"] = "None";
+	        builder["indentation"] = "   "; 
+
+	        unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
+
+	        writer->write(bpt.json_graph(bpt.getRoot()),&fd);
+
+	        fd.close();
+
+	        system("./printBTree.sh tree.json && convert tree.json.svg out.png && imgcat out.png");
 		}
 		else if(!command.compare("save"))
 		{
@@ -776,9 +802,9 @@ void BPTree::removeInternal(int x, Node* cursor, Node* child)
 		cout<<"Merged with right sibling\n";
 	}
 }
+
 void BPTree::display(Node* cursor)
 {
-	
 	if(cursor!=NULL)
 	{
 		for(int i = 0; i < cursor->size; i++)
@@ -795,6 +821,33 @@ void BPTree::display(Node* cursor)
 		}
 	}
 }
+
+Value BPTree::json_graph(Node* cursor) {
+
+    Value graph;
+    Value children;
+    Value key(arrayValue);
+
+	if(cursor!=NULL){
+
+	    int i,j;
+
+	    for(i=0; i<cursor->size; i++)
+	        key.append(Value(cursor->key[i]));
+
+	    if(cursor->IS_LEAF != true){
+	        for (i = 0; i <= cursor->size; i++)
+	            children.append(json_graph(cursor->ptr[i]));
+	        graph["children"] = children;
+	    }
+
+	    graph["keys"] = key;
+	}
+    
+
+    return graph;
+}
+
 Node* BPTree::getRoot()
 {
 	return root;
