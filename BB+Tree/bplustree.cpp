@@ -12,7 +12,7 @@ int MAX;
 class BPTree; 
 class Node
 {
-	bool IS_LEAF;
+	bool is_leaf;
 	int *key, size;
 	Node** ptr;
 	friend class BPTree;
@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
 
 	        fd.close();
 
-	        system("./printBTree.sh tree.json && convert tree.json.svg out.png && imgcat out.png");
+	        system("./printBTree.sh");
 		}
 		else if(!command.compare("save"))
 		{
@@ -201,7 +201,7 @@ void BPTree::search(int x)
 	{
 		Node* cursor = root;
 		
-		while(cursor->IS_LEAF == false)
+		while(cursor->is_leaf == false)
 		{
 			for(int i = 0; i < cursor->size; i++)
 			{
@@ -236,7 +236,7 @@ void BPTree::insert(int x)
 	{
 		root = new Node;
 		root->key[0] = x;
-		root->IS_LEAF = true;
+		root->is_leaf = true;
 		root->size = 1;
 		cout<<"Created root\nInserted "<<x<<" successfully\n";
 	}
@@ -245,7 +245,7 @@ void BPTree::insert(int x)
 		Node* cursor = root;
 		Node* parent;
 		
-		while(cursor->IS_LEAF == false)
+		while(cursor->is_leaf == false)
 		{
 			parent = cursor;
 			for(int i = 0; i < cursor->size; i++)
@@ -301,7 +301,7 @@ void BPTree::insert(int x)
 				virtualNode[j] = virtualNode[j-1];
 			}
 			virtualNode[i] = x; 
-			newLeaf->IS_LEAF = true;
+			newLeaf->is_leaf = true;
 			
 			cursor->size = (MAX+1)/2;
 			newLeaf->size = MAX+1-(MAX+1)/2;
@@ -327,7 +327,7 @@ void BPTree::insert(int x)
 				newRoot->key[0] = newLeaf->key[0];
 				newRoot->ptr[0] = cursor;
 				newRoot->ptr[1] = newLeaf;
-				newRoot->IS_LEAF = false;
+				newRoot->is_leaf = false;
 				newRoot->size = 1;
 				root = newRoot;
 				cout<<"Created new root\n";
@@ -394,7 +394,7 @@ void BPTree::insertInternal(int x, Node* cursor, Node* child)
 			virtualPtr[j] = virtualPtr[j-1];
 		}
 		virtualPtr[i+1] = child; 
-		newInternal->IS_LEAF = false;
+		newInternal->is_leaf = false;
 		
 		cursor->size = (MAX+1)/2;
 		newInternal->size = MAX-(MAX+1)/2;
@@ -415,7 +415,7 @@ void BPTree::insertInternal(int x, Node* cursor, Node* child)
 			newRoot->key[0] = cursor->key[cursor->size];
 			newRoot->ptr[0] = cursor;
 			newRoot->ptr[1] = newInternal;
-			newRoot->IS_LEAF = false;
+			newRoot->is_leaf = false;
 			newRoot->size = 1;
 			root = newRoot;
 			cout<<"Created new root\n";
@@ -433,7 +433,7 @@ Node* BPTree::findParent(Node* cursor, Node* child)
 	
 	
 	Node* parent;
-	if(cursor->IS_LEAF || (cursor->ptr[0])->IS_LEAF)
+	if(cursor->is_leaf || (cursor->ptr[0])->is_leaf)
 	{
 		return NULL;
 	}
@@ -464,7 +464,7 @@ void BPTree::remove(int x)
 		Node* parent;
 		int leftSibling, rightSibling;
 		
-		while(cursor->IS_LEAF == false)
+		while(cursor->is_leaf == false)
 		{
 			for(int i = 0; i < cursor->size; i++)
 			{
@@ -812,7 +812,7 @@ void BPTree::display(Node* cursor)
 			cout<<cursor->key[i]<<" ";
 		}
 		cout<<"\n";
-		if(cursor->IS_LEAF != true)
+		if(cursor->is_leaf != true)
 		{
 			for(int i = 0; i < cursor->size+1; i++)
 			{
@@ -835,7 +835,7 @@ Value BPTree::json_graph(Node* cursor) {
 	    for(i=0; i<cursor->size; i++)
 	        key.append(Value(cursor->key[i]));
 
-	    if(cursor->IS_LEAF != true){
+	    if(cursor->is_leaf != true){
 	        for (i = 0; i <= cursor->size; i++)
 	            children.append(json_graph(cursor->ptr[i]));
 	        graph["children"] = children;
@@ -857,7 +857,7 @@ void BPTree::cleanUp(Node* cursor)
 	
 	if(cursor!=NULL)
 	{
-		if(cursor->IS_LEAF != true)
+		if(cursor->is_leaf != true)
 		{
 			for(int i = 0; i < cursor->size+1; i++)
 			{

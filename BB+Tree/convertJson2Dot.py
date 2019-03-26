@@ -20,7 +20,7 @@ def printLabel(node, name):
     sys.stdout.write('"];\n')
 
 def printEdge(myName, i, child):
-    sys.stdout.write('"' + myName + '":f' + str(i) + ' -> "' + child + '"\n' )
+    sys.stdout.write('"' + myName + '":f' + str(i) + ' -> "' + child + '"[color=white]\n' )
 
 def printNode(node):
     myName = 'node' + getNewId();
@@ -42,7 +42,7 @@ for line in fileinput.input():
 
 btree = json.loads(jsonfile);
 
-sys.stdout.write('digraph BTree { node [shape = record,height=.1];\n')
+sys.stdout.write('digraph BTree { bgcolor=transparent; node [color=white,fontcolor=white,shape=record,height=.1];\n')
 printNode(btree)
 sys.stdout.write('}\n')
 

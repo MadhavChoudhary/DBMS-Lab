@@ -84,7 +84,7 @@ public:
 
         fd.close();
 
-        system("./printBTree.sh tree.json && convert tree.json.svg out.png && imgcat out.png");
+        system("./printBTree.sh");
     }
 
     BTreeNode * search(int k) {
@@ -490,17 +490,18 @@ int main() {
 
         if(ch=="exit")
             break;
-        else if(ch=="print")
+        else if(ch=="print"){
             t.print_graph();
+        }
         else{
             cin>>d;
             if(ch=="insert"){
                 t.insert(d);
-                t.traverse();
+                t.print_graph();
             }
             else if(ch=="remove"){
                 t.remove(d);
-                t.traverse();
+                t.print_graph();
             }
             else if(ch=="search"){
                 cout<<"The pointer for the node is "<<t.search(d);
