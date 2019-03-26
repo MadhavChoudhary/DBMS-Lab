@@ -15,6 +15,8 @@ class BTreeNode {
 
   void traverse();
 
+  void inordertraverse();
+
   BTreeNode * search(int k);
 
   int findKey(int k);
@@ -352,10 +354,13 @@ void BTreeNode::traverse() {
   cout<<") -> ";
 
   cout<<"(";
-  for(i=0; i<=n; i++)
-  	for(j=0; j<n; j++)
-  		if(C[i]!=NULL)
-  			cout<<C[i]->keys[j]<<" ";
+  for(i=0; i<=n; i++){
+  	if(C[i]!=NULL){
+	  	for(j=0; j<C[i]->n; j++)
+	  	  cout<<C[i]->keys[j]<<" ";
+	  	cout<<", ";
+  	}
+  }
   cout<<")\n";
 
 	for (i = 0; i < n; i++) 
@@ -365,6 +370,20 @@ void BTreeNode::traverse() {
 	if (leaf == false) 
 		C[i] -> traverse();
 }
+
+void BTreeNode::inordertraverse() 
+{ 
+  int i; 
+  for (i = 0; i < n; i++) 
+  {  
+      if (leaf == false) 
+          C[i]->traverse(); 
+      cout << " " << keys[i]; 
+  } 
+
+  if (leaf == false) 
+      C[i]->traverse(); 
+} 
 
 BTreeNode * BTreeNode::search(int k) {
 
@@ -413,15 +432,19 @@ int main() {
   while(1)
   {
   	cin>>ch;
-  	if(ch=="quit")
+  	if(ch=="q")
   		break;
-  	cin>>d;
-  	else if(ch=="insert")
-  		t.insert(d);
-  	else if(ch=="remove")
-  		t.remove(d);
 
-  	t.traverse();
+  	cin>>d;
+
+  	if(ch=="i") t.insert(d);
+  	else if(ch=="r") t.remove(d);
+
+    t.traverse();
+
+    else if(ch=="s")
+      cout<<"The address of the node is "<<t.search(d);
+    
   	cout<<endl;
   }
 
